@@ -9,12 +9,17 @@ PinPoint = new JS.Class({
         this._map = new GMap2(this._elements._map);
         this._map.addControl(new GSmallMapControl());
         this._map.addControl(new GMenuMapTypeControl());
+        this._map.setCenter(new GLatLng(0,0), 12);
         
         this.klass.MAP_CONFIG.forEach(function(flag) { this._map[flag]() }, this);
         
         this._geocoder = new GClientGeocoder();
         this._marker = new GMarker(new GLatLng(0,0));
         this._map.addOverlay(this._marker);
+        
+        GEvent.addListener(this._map, 'dblclick', function(overlay, location) {
+            this.setLatLng(location.lat(), location.lng());
+        }.bind(this));
     },
     
     getHTML: function() {
@@ -40,8 +45,11 @@ PinPoint = new JS.Class({
     },
     
     setLatLng: function(lat, lng, zoom) {
-        var latlng = new GLatLng(lat, lng);
-        this._map.setCenter(latlng, zoom);
+        var latlng = new GLatLng(lat, lng),
+            bounds = this._map.getBounds();
+        
+        if (zoom || !bounds.containsLatLng(latlng)) this._map.setCenter(latlng, zoom);
+        
         this._marker.setLatLng(latlng);
         this.notifyObservers('locationchange', {
             lat: this.klass.toDecPl(lat, 6),
