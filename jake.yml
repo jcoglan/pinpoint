@@ -1,0 +1,12 @@
+--
+source_directory:   .
+build_directory:    lib
+layout:             together
+builds:
+  min:
+    shrink_vars:    true
+    private:        true
+packages:
+  pinpoint:
+    - pinpoint
+
