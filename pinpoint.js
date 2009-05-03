@@ -10,6 +10,8 @@ PinPoint = new JS.Class({
         this._map.addControl(new GSmallMapControl());
         this._map.addControl(new GMenuMapTypeControl());
         
+        this.klass.MAP_CONFIG.forEach(function(flag) { this._map[flag]() }, this);
+        
         this._geocoder = new GClientGeocoder();
         this._marker = new GMarker(new GLatLng(0,0));
         this._map.addOverlay(this._marker);
@@ -79,7 +81,13 @@ PinPoint = new JS.Class({
         CONTAINER_CLASS:  'pinpoint-container',
         MAP_CLASS:        'pinpoint-map',
         SEARCH_LABEL:     'Address',
-        BUTTON_TEXT:      'Search'
+        BUTTON_TEXT:      'Search',
+        
+        MAP_CONFIG: [ 'enableDragging',
+                      'disableDoubleClickZoom',
+                      'enableContinuousZoom',
+                      'enableScrollWheelZoom',
+                      'enablePinchToZoom' ]
     }
 });
 
