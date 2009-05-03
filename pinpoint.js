@@ -14,11 +14,15 @@ PinPoint = new JS.Class({
         this.klass.MAP_CONFIG.forEach(function(flag) { this._map[flag]() }, this);
         
         this._geocoder = new GClientGeocoder();
-        this._marker = new GMarker(new GLatLng(0,0));
+        this._marker = new GMarker(new GLatLng(0,0), {draggable: true});
         this._map.addOverlay(this._marker);
         
         GEvent.addListener(this._map, 'dblclick', function(overlay, location) {
             this.setLatLng(location.lat(), location.lng());
+        }.bind(this));
+        
+        GEvent.addListener(this._marker, 'dragend', function(location) {
+            this._publishLocation(location);
         }.bind(this));
     },
     
@@ -51,10 +55,7 @@ PinPoint = new JS.Class({
         if (zoom || !bounds.containsLatLng(latlng)) this._map.setCenter(latlng, zoom);
         
         this._marker.setLatLng(latlng);
-        this.notifyObservers('locationchange', {
-            lat: this.klass.toDecPl(lat, 6),
-            lng: this.klass.toDecPl(lng, 6)
-        });
+        this._publishLocation(latlng);
     },
     
     search: function(address) {
@@ -72,6 +73,13 @@ PinPoint = new JS.Class({
             
             this.setLatLng(coords[1], coords[0], zoom);
         }.bind(this));
+    },
+    
+    _publishLocation: function(location) {
+        this.notifyObservers('locationchange', {
+            lat:  this.klass.toDecPl(location.lat(), 6),
+            lng:  this.klass.toDecPl(location.lng(), 6)
+        });
     },
     
     extend: {
