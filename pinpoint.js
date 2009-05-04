@@ -26,6 +26,16 @@ PinPoint = new JS.Class({
         }.bind(this));
     },
     
+    forFields: function(lat, lng) {
+        lat = Ojay(lat);
+        lng = Ojay(lng);
+        this.on('locationchange', function(pin, location) {
+            lat.set({value: location.lat});
+            lng.set({value: location.lng});
+        });
+        return this;
+    },
+    
     getHTML: function() {
         if (this._html) return this._html;
         var self = this, klass = self.klass, elements = self._elements;
